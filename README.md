@@ -66,14 +66,3 @@ I've added a simple `run_example.sh` script for testing the tool with this tutor
 ```bash
 ./run_example
 ```
-
-
-export LD_LIBRARY_PATH="$HOME/.local/Meshroom-2020.1.0/aliceVision/lib/":$LD_LIBRARY_PATH
-
-
-
-
-
-
-
-LD_LIBRARY_PATH=/usr/lib/nvidia-340:$LD_LIBRARY_PATH
