@@ -15,6 +15,9 @@ CAMERA_SFM_FILENAME = "cameraInit.sfm"
 
 FEATURE_EXTRACTION_DIRNAME = "FeatureExtraction"
 
+IMAGE_MATCHING_DIRNAME = "ImageMatching"
+IMAGE_MATCHING_FILENAME = "imageMatches.txt"
+
 
 def run_cmd_and_print_results(verbose, silent, cmd, step_name):
 
@@ -101,6 +104,43 @@ def extract_features(output: Path, meshroom: Path, num_images: int, handle_cmd) 
     return handle_cmd(cmd, "feature extraction")
 
 
+def image_matching(output: Path, meshroom: Path, handle_cmd) -> bool:
+
+    odir = output / IMAGE_MATCHING_DIRNAME
+    odir.mkdir(exist_ok=True)
+
+    image_matching_bin = meshroom / "aliceVision" / "bin" / "aliceVision_imageMatching"
+
+    camera_sfm_filepath = output / CAMERA_INITIALIZATION_DIRNAME / CAMERA_SFM_FILENAME
+
+    features_dir = output / FEATURE_EXTRACTION_DIRNAME
+
+    cmd = [
+        image_matching_bin,
+        "--input",
+        camera_sfm_filepath,
+        "--featuresFolders",
+        features_dir,
+        "--output",
+        odir / IMAGE_MATCHING_FILENAME,
+        "--minNbImages",
+        "200",
+        "--tree",
+        "",
+        "--maxDescriptors",
+        "500",
+        "--verboseLevel",
+        "info",
+        "--weights",
+        "",
+        "--nbMatches",
+        "50",
+    ]
+
+    # Return True if operation is successful
+    return handle_cmd(cmd, "image matching")
+
+
 def main():
     aparser = ArgumentParser("Run AlliceVision from the command line.")
     aparser.add_argument(
@@ -133,12 +173,15 @@ def main():
     handle_cmd = partial(run_cmd_and_print_results, args.verbose, args.silent)
 
     # Run each step
-    if not initialize_camera(
-        args.output_dir, args.meshroom_dir, args.image_dir, handle_cmd
-    ):
-        raise SystemExit
+    # if not initialize_camera(
+    #     args.output_dir, args.meshroom_dir, args.image_dir, handle_cmd
+    # ):
+    #     raise SystemExit
 
-    if not extract_features(args.output_dir, args.meshroom_dir, num_images, handle_cmd):
+    # if not extract_features(args.output_dir, args.meshroom_dir, num_images, handle_cmd):
+    #     raise SystemExit
+
+    if not image_matching(args.output_dir, args.meshroom_dir, handle_cmd):
         raise SystemExit
 
 
