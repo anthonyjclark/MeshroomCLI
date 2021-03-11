@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """
 Based on: http://filmicworlds.com/blog/command-line-photogrammetry-with-alicevision/
+export LD_LIBRARY_PATH=$HOME/.local/Meshroom-2020.1.0/aliceVision/lib
 """
 
 from argparse import ArgumentParser
@@ -18,6 +19,11 @@ FEATURE_EXTRACTION_DIRNAME = "FeatureExtraction"
 IMAGE_MATCHING_DIRNAME = "ImageMatching"
 IMAGE_MATCHING_FILENAME = "imageMatches.txt"
 
+FEATURE_MATCHING_DIRNAME = "FeatureMatching"
+
+STRUCTURE_FROM_MOTION_DIRNAME = "StrctureFromMotion"
+STRUCTURE_FROM_MOTION_SFM_FILENAME = "strctureFromMotion.sfm"
+SFM_VIEWS_POSES_SFM_FILENAME = "SFMViewsPoses.sfm"
 
 def run_cmd_and_print_results(verbose, silent, cmd, step_name):
 
@@ -141,6 +147,124 @@ def image_matching(output: Path, meshroom: Path, handle_cmd) -> bool:
     return handle_cmd(cmd, "image matching")
 
 
+def feature_matching(output: Path, meshroom: Path, handle_cmd) -> bool:
+    
+    odir = output / FEATURE_MATCHING_DIRNAME
+    odir.mkdir(exist_ok=True)
+
+    feature_matching_bin = meshroom / "aliceVision" / "bin" / "aliceVision_featureMatching"
+
+    camera_sfm_filepath = output / CAMERA_INITIALIZATION_DIRNAME / CAMERA_SFM_FILENAME
+
+    features_dir = output / FEATURE_EXTRACTION_DIRNAME
+
+    image_pairs_filepath = output / IMAGE_MATCHING_DIRNAME / IMAGE_MATCHING_FILENAME
+
+    cmd = [
+        feature_matching_bin,
+        "--input",
+        camera_sfm_filepath,
+        "--output",
+        odir,
+        "--featuresFolders",
+        features_dir,
+        "--imagePairsList", 
+        image_pairs_filepath,
+        "--photometricMatchingMethod",
+        "ANN_L2",
+        "--verboseLevel",
+        "info",
+        "--describerTypes",
+        "sift",
+        "--maxMatches",
+        "0",
+        "--exportDebugFiles",
+        "False",
+        "--savePutativeMatches",
+        "False",
+        "--guidedMatching",
+        "False",
+        "--geometricEstimator",
+        "acransac",
+        "--geometricFilterType",
+        "fundamental_matrix",
+        "--maxIteration",
+        "2048", 
+        "--distanceRatio",
+        "0.8"
+    ]
+
+    # Return True if operation is successful
+    return handle_cmd(cmd, "feature matching")
+
+def structure_from_motion(output: Path, meshroom: Path, handle_cmd) -> bool:
+    
+    odir = output / STRUCTURE_FROM_MOTION_DIRNAME
+    odir.mkdir(exist_ok=True)
+
+    structure_from_motion_bin = meshroom / "aliceVision" / "bin" / "aliceVision_incrementalSfM"
+
+    camera_sfm_filepath = output / CAMERA_INITIALIZATION_DIRNAME / CAMERA_SFM_FILENAME
+
+    features_dir = output / FEATURE_EXTRACTION_DIRNAME
+
+    feature_matches_dir = output / FEATURE_MATCHING_DIRNAME
+
+    cmd = [
+        structure_from_motion_bin,
+        "--input",
+        camera_sfm_filepath,
+        "--output",
+        odir / STRUCTURE_FROM_MOTION_SFM_FILENAME,
+        "--featuresFolders",
+        features_dir,
+        "--matchesFolders",
+        feature_matches_dir,
+        "--outputViewsAndPoses",
+        odir / SFM_VIEWS_POSES_SFM_FILENAME,
+        "--extraInfoFolder",
+        odir,
+        "--minAngleForLandmark",
+        "2.0",
+        "--minNumberOfObservationsForTriangulation",
+        "2",
+        "--maxAngleInitialPair",
+        "40.0",
+        "--maxNumberOfMatches",
+        "0",
+        "--localizerEstimator",
+        "acransac",
+        "--describerTypes",
+        "sift",
+        "--lockScenePreviouslyReconstructed",
+        "False",
+        "--localBAGraphDistance",
+        "1",
+        # "--initialPairA", (EXPECTS ARGUMENT)
+        # "--initialPairB", (EXPECTS ARGUMENT)
+        "--interFileExtension",
+        ".ply",
+        "--useLocalBA",
+        "True",
+        "--minInputTrackLength",
+        "2",
+        "--useOnlyMatchesFromInputFolder",
+        "False",
+        "--verboseLevel",
+        "info",
+        "--minAngleForTriangulation",
+        "3.0",
+        "--maxReprojectionError",
+        "4.0",
+        "--minAngleInitialPair",
+        "5.0"
+    ]
+    
+    print(cmd)
+    # Return True if operation is successful
+    return handle_cmd(cmd, "structure from motion")
+
+
 def main():
     aparser = ArgumentParser("Run AlliceVision from the command line.")
     aparser.add_argument(
@@ -174,16 +298,20 @@ def main():
 
     # Run each step
     # if not initialize_camera(
-    #     args.output_dir, args.meshroom_dir, args.image_dir, handle_cmd
-    # ):
+    #     args.output_dir, args.meshroom_dir, args.image_dir, handle_cmd):
     #     raise SystemExit
 
     # if not extract_features(args.output_dir, args.meshroom_dir, num_images, handle_cmd):
     #     raise SystemExit
 
-    if not image_matching(args.output_dir, args.meshroom_dir, handle_cmd):
+    # if not image_matching(args.output_dir, args.meshroom_dir, handle_cmd):
+    #     raise SystemExit
+    
+    if not feature_matching(args.output_dir, args.meshroom_dir, handle_cmd):
         raise SystemExit
 
+    if not structure_from_motion(args.output_dir, args.meshroom_dir, handle_cmd):
+        raise SystemExit
 
 if __name__ == "__main__":
     main()
