@@ -11,11 +11,11 @@ def SilentMkdir(theDir):
 
 
 def Run_00_CameraInit(baseDir, binDir, srcImageDir):
-    SilentMkdir(baseDir + "/00_CameraInit")
+    # SilentMkdir(baseDir + "/00_CameraInit")
 
-    binName = binDir + "\\aliceVision_cameraInit.exe"
+    binName = binDir + "\\aliceVision_cameraInit"  # .exe"
 
-    dstDir = baseDir + "/00_CameraInit/"
+    dstDir = baseDir + "/"  # + "/00_CameraInit/"
     cmdLine = binName
     cmdLine = (
         cmdLine
@@ -23,18 +23,18 @@ def Run_00_CameraInit(baseDir, binDir, srcImageDir):
     )
     cmdLine = cmdLine + ' --imageFolder "' + srcImageDir + '"'
     cmdLine = cmdLine + ' --output "' + dstDir + 'cameraInit.sfm"'
-    print(cmdLine)
-    os.system(cmdLine)
+    print("\n\n", "-" * 20, "\n\n", cmdLine)
+    # os.system(cmdLine)
 
     return 0
 
 
 def Run_01_FeatureExtraction(baseDir, binDir, numImages):
-    SilentMkdir(baseDir + "/01_FeatureExtraction")
+    # SilentMkdir(baseDir + "/01_FeatureExtraction")
 
     srcSfm = baseDir + "/00_CameraInit/cameraInit.sfm"
 
-    binName = binDir + "\\aliceVision_featureExtraction.exe"
+    binName = binDir + "\\aliceVision_featureExtraction"  # .exe"
 
     dstDir = baseDir + "/01_FeatureExtraction/"
 
@@ -46,20 +46,20 @@ def Run_01_FeatureExtraction(baseDir, binDir, numImages):
     cmdLine = cmdLine + " --rangeStart 0 --rangeSize " + str(numImages)
     cmdLine = cmdLine + ' --input "' + srcSfm + '"'
     cmdLine = cmdLine + ' --output "' + dstDir + '"'
-    print(cmdLine)
-    os.system(cmdLine)
+    print("\n\n", "-" * 20, "\n\n", cmdLine)
+    # os.system(cmdLine)
 
     return 0
 
 
 def Run_02_ImageMatching(baseDir, binDir):
-    SilentMkdir(baseDir + "/02_ImageMatching")
+    # SilentMkdir(baseDir + "/02_ImageMatching")
 
     srcSfm = baseDir + "/00_CameraInit/cameraInit.sfm"
     srcFeatures = baseDir + "/01_FeatureExtraction/"
     dstMatches = baseDir + "/02_ImageMatching/imageMatches.txt"
 
-    binName = binDir + "\\aliceVision_imageMatching.exe"
+    binName = binDir + "\\aliceVision_imageMatching"  # .exe"
 
     cmdLine = binName
     cmdLine = (
@@ -71,21 +71,21 @@ def Run_02_ImageMatching(baseDir, binDir):
     cmdLine = cmdLine + ' --featuresFolder "' + srcFeatures + '"'
     cmdLine = cmdLine + ' --output "' + dstMatches + '"'
 
-    print(cmdLine)
-    os.system(cmdLine)
+    print("\n\n", "-" * 20, "\n\n", cmdLine)
+    # os.system(cmdLine)
 
     return 0
 
 
 def Run_03_FeatureMatching(baseDir, binDir):
-    SilentMkdir(baseDir + "/03_FeatureMatching")
+    # SilentMkdir(baseDir + "/03_FeatureMatching")
 
     srcSfm = baseDir + "/00_CameraInit/cameraInit.sfm"
     srcFeatures = baseDir + "/01_FeatureExtraction/"
     srcImageMatches = baseDir + "/02_ImageMatching/imageMatches.txt"
     dstMatches = baseDir + "/03_FeatureMatching"
 
-    binName = binDir + "\\aliceVision_featureMatching.exe"
+    binName = binDir + "\\aliceVision_featureMatching"  # .exe"
 
     cmdLine = binName
     cmdLine = (
@@ -102,13 +102,13 @@ def Run_03_FeatureMatching(baseDir, binDir):
     cmdLine = cmdLine + ' --featuresFolders "' + srcFeatures + '"'
     cmdLine = cmdLine + ' --output "' + dstMatches + '"'
 
-    print(cmdLine)
-    os.system(cmdLine)
+    print("\n\n", "-" * 20, "\n\n", cmdLine)
+    # os.system(cmdLine)
     return 0
 
 
 def Run_04_StructureFromMotion(baseDir, binDir):
-    SilentMkdir(baseDir + "/04_StructureFromMotion")
+    # SilentMkdir(baseDir + "/04_StructureFromMotion")
 
     srcSfm = baseDir + "/00_CameraInit/cameraInit.sfm"
     srcFeatures = baseDir + "/01_FeatureExtraction/"
@@ -116,18 +116,20 @@ def Run_04_StructureFromMotion(baseDir, binDir):
     srcMatches = baseDir + "/03_FeatureMatching"
     dstDir = baseDir + "/04_StructureFromMotion"
 
-    binName = binDir + "\\aliceVision_incrementalSfm.exe"
+    binName = binDir + "\\aliceVision_incrementalSfM"  # .exe"
 
     cmdLine = binName
     cmdLine = (
         cmdLine
         + " --minAngleForLandmark 2.0 --minNumberOfObservationsForTriangulation 2 --maxAngleInitialPair 40.0 --maxNumberOfMatches 0 --localizerEstimator acransac --describerTypes sift --lockScenePreviouslyReconstructed False --localBAGraphDistance 1"
     )
-    cmdLine = (
-        cmdLine + " --initialPairA "
-        " --initialPairB "
-        " --interFileExtension .ply --useLocalBA True"
-    )
+    # cmdLine = (
+    #     cmdLine + " --initialPairA "
+    #     " --initialPairB "
+    #     " --interFileExtension .ply --useLocalBA True"
+    # )
+
+    cmdLine = cmdLine + " --interFileExtension .ply --useLocalBA True"
     cmdLine = (
         cmdLine
         + " --minInputTrackLength 2 --useOnlyMatchesFromInputFolder False --verboseLevel info --minAngleForTriangulation 3.0 --maxReprojectionError 4.0 --minAngleInitialPair 5.0"
@@ -140,55 +142,55 @@ def Run_04_StructureFromMotion(baseDir, binDir):
     cmdLine = cmdLine + ' --extraInfoFolder "' + dstDir + '"'
     cmdLine = cmdLine + ' --output "' + dstDir + '/bundle.sfm"'
 
-    print(cmdLine)
-    os.system(cmdLine)
+    print("\n\n", "-" * 20, "\n\n", cmdLine)
+    # os.system(cmdLine)
     return 0
 
 
 def Run_05_PrepareDenseScene(baseDir, binDir):
-    SilentMkdir(baseDir + "/05_PrepareDenseScene")
+    # SilentMkdir(baseDir + "/05_PrepareDenseScene")
 
     # srcSfm = baseDir + "/04_StructureFromMotion/cameras.sfm"
     srcSfm = baseDir + "/04_StructureFromMotion/bundle.sfm"
     dstDir = baseDir + "/05_PrepareDenseScene"
 
-    binName = binDir + "\\aliceVision_prepareDenseScene.exe"
+    binName = binDir + "\\aliceVision_prepareDenseScene"  # .exe"
 
     cmdLine = binName
     cmdLine = cmdLine + " --verboseLevel info"
     cmdLine = cmdLine + ' --input "' + srcSfm + '"'
     cmdLine = cmdLine + ' --output "' + dstDir + '"'
 
-    print(cmdLine)
-    os.system(cmdLine)
+    print("\n\n", "-" * 20, "\n\n", cmdLine)
+    # os.system(cmdLine)
     return 0
 
 
 def Run_06_CameraConnection(baseDir, binDir):
-    SilentMkdir(baseDir + "/06_CameraConnection")
+    # SilentMkdir(baseDir + "/06_CameraConnection")
 
     srcIni = baseDir + "/05_PrepareDenseScene/mvs.ini"
 
     # This step kindof breaks the directory structure. Tt creates
     # a camsPairsMatrixFromSeeds.bin file in in the same file as mvs.ini
-    binName = binDir + "\\aliceVision_cameraConnection.exe"
+    binName = binDir + "\\aliceVision_cameraConnection"  # .exe"
 
     cmdLine = binName
     cmdLine = cmdLine + " --verboseLevel info"
     cmdLine = cmdLine + ' --ini "' + srcIni + '"'
 
-    print(cmdLine)
-    os.system(cmdLine)
+    print("\n\n", "-" * 20, "\n\n", cmdLine)
+    # os.system(cmdLine)
     return 0
 
 
 def Run_07_DepthMap(baseDir, binDir, numImages, groupSize):
-    SilentMkdir(baseDir + "/07_DepthMap")
+    # SilentMkdir(baseDir + "/07_DepthMap")
 
-    numGroups = (numImages + (groupSize - 1)) / groupSize
+    numGroups = (numImages + (groupSize - 1)) // groupSize
 
     srcIni = baseDir + "/05_PrepareDenseScene/mvs.ini"
-    binName = binDir + "\\aliceVision_depthMapEstimation.exe"
+    binName = binDir + "\\aliceVision_depthMapEstimation"  # .exe"
     dstDir = baseDir + "/07_DepthMap"
 
     cmdLine = binName
@@ -214,7 +216,7 @@ def Run_07_DepthMap(baseDir, binDir, numImages, groupSize):
 
         cmd = cmdLine + (" --rangeStart %d --rangeSize %d" % (groupStart, groupSize))
         print(cmd)
-        os.system(cmd)
+        # os.system(cmd)
 
     # cmd = "aliceVision_depthMapEstimation  --sgmGammaC 5.5 --sgmWSH 4 --refineGammaP 8.0 --refineSigma 15 --refineNSamplesHalf 150 --sgmMaxTCams 10 --refineWSH 3 --downscale 2 --refineMaxTCams 6 --verboseLevel info --refineGammaC 15.5 --sgmGammaP 8.0 --ini \"c:/users/geforce/appdata/local/temp/MeshroomCache/PrepareDenseScene/4f0d6d9f9d072ed05337fd7c670811b1daa00e62/mvs.ini\" --refineNiters 100 --refineNDepthsToRefine 31 --refineUseTcOrRcPixSize False --output \"c:/users/geforce/appdata/local/temp/MeshroomCache/DepthMap/18f3bd0a90931bd749b5eda20c8bf9f6dab63af9\" --rangeStart 0 --rangeSize 3"
     # cmd = binName + " --sgmGammaC 5.5 --sgmWSH 4 --refineGammaP 8.0 --refineSigma 15 --refineNSamplesHalf 150 --sgmMaxTCams 10 --refineWSH 3 --downscale 2 --refineMaxTCams 6 --verboseLevel info --refineGammaC 15.5 --sgmGammaP 8.0 --ini \"c:/users/geforce/appdata/local/temp/MeshroomCache/PrepareDenseScene/4f0d6d9f9d072ed05337fd7c670811b1daa00e62/mvs.ini\" --refineNiters 100 --refineNDepthsToRefine 31 --refineUseTcOrRcPixSize False --output \"build_files/07_DepthMap/\" --rangeStart 0 --rangeSize 3"
@@ -226,9 +228,9 @@ def Run_07_DepthMap(baseDir, binDir, numImages, groupSize):
 
 
 def Run_08_DepthMapFilter(baseDir, binDir):
-    SilentMkdir(baseDir + "/08_DepthMapFilter")
+    # SilentMkdir(baseDir + "/08_DepthMapFilter")
 
-    binName = binDir + "\\aliceVision_depthMapFiltering.exe"
+    binName = binDir + "\\aliceVision_depthMapFiltering"  # .exe"
     dstDir = baseDir + "/08_DepthMapFilter"
     srcIni = baseDir + "/05_PrepareDenseScene/mvs.ini"
     srcDepthDir = baseDir + "/07_DepthMap"
@@ -244,15 +246,15 @@ def Run_08_DepthMapFilter(baseDir, binDir):
     cmdLine = cmdLine + ' --output "' + dstDir + '"'
     cmdLine = cmdLine + ' --depthMapFolder "' + srcDepthDir + '"'
 
-    print(cmdLine)
-    os.system(cmdLine)
+    print("\n\n", "-" * 20, "\n\n", cmdLine)
+    # os.system(cmdLine)
     return 0
 
 
 def Run_09_Meshing(baseDir, binDir):
-    SilentMkdir(baseDir + "/09_Meshing")
+    # SilentMkdir(baseDir + "/09_Meshing")
 
-    binName = binDir + "\\aliceVision_meshing.exe"
+    binName = binDir + "\\aliceVision_meshing"  # .exe"
     srcIni = baseDir + "/05_PrepareDenseScene/mvs.ini"
     srcDepthFilterDir = baseDir + "/08_DepthMapFilter"
     srcDepthMapDir = baseDir + "/07_DepthMap"
@@ -278,15 +280,15 @@ def Run_09_Meshing(baseDir, binDir):
     cmdLine = cmdLine + ' --depthMapFolder "' + srcDepthMapDir + '"'
     cmdLine = cmdLine + ' --output "' + dstDir + '/mesh.obj"'
 
-    print(cmdLine)
-    os.system(cmdLine)
+    print("\n\n", "-" * 20, "\n\n", cmdLine)
+    # os.system(cmdLine)
     return 0
 
 
 def Run_10_MeshFiltering(baseDir, binDir):
-    SilentMkdir(baseDir + "/10_MeshFiltering")
+    # SilentMkdir(baseDir + "/10_MeshFiltering")
 
-    binName = binDir + "\\aliceVision_meshFiltering.exe"
+    binName = binDir + "\\aliceVision_meshFiltering"  # .exe"
 
     srcMesh = baseDir + "/09_Meshing/mesh.obj"
     dstMesh = baseDir + "/10_MeshFiltering/mesh.obj"
@@ -301,16 +303,16 @@ def Run_10_MeshFiltering(baseDir, binDir):
     cmdLine = cmdLine + ' --input "' + srcMesh + '"'
     cmdLine = cmdLine + ' --output "' + dstMesh + '"'
 
-    print(cmdLine)
-    os.system(cmdLine)
+    print("\n\n", "-" * 20, "\n\n", cmdLine)
+    # os.system(cmdLine)
 
     return 0
 
 
 def Run_11_Texturing(baseDir, binDir):
-    SilentMkdir(baseDir + "/11_Texturing")
+    # SilentMkdir(baseDir + "/11_Texturing")
 
-    binName = binDir + "\\aliceVision_texturing.exe"
+    binName = binDir + "\\aliceVision_texturing"  # .exe"
 
     srcMesh = baseDir + "/10_MeshFiltering/mesh.obj"
     srcRecon = baseDir + "/09_Meshing/denseReconstruction.bin"
@@ -330,8 +332,8 @@ def Run_11_Texturing(baseDir, binDir):
     cmdLine = cmdLine + ' --ini "' + srcIni + '"'
     cmdLine = cmdLine + ' --output "' + dstDir + '"'
 
-    print(cmdLine)
-    os.system(cmdLine)
+    print("\n\n", "-" * 20, "\n\n", cmdLine)
+    # os.system(cmdLine)
 
     return 0
 
@@ -360,24 +362,24 @@ def main():
     print("Num images: %d" % numImages)
     print("Step      : %s" % runStep)
 
-    SilentMkdir(baseDir)
+    # SilentMkdir(baseDir)
 
     if runStep == "runall":
         Run_00_CameraInit(baseDir, binDir, srcImageDir)
         Run_01_FeatureExtraction(baseDir, binDir, numImages)
-        Run_02_ImageMatching(baseDir, binDir)
-        Run_03_FeatureMatching(baseDir, binDir)
-        Run_04_StructureFromMotion(baseDir, binDir)
-        Run_05_PrepareDenseScene(baseDir, binDir)
+        # Run_02_ImageMatching(baseDir, binDir)
+        # Run_03_FeatureMatching(baseDir, binDir)
+        # Run_04_StructureFromMotion(baseDir, binDir)
+        # Run_05_PrepareDenseScene(baseDir, binDir)
 
-        Run_06_CameraConnection(baseDir, binDir)
+        # Run_06_CameraConnection(baseDir, binDir)
 
-        Run_07_DepthMap(baseDir, binDir, numImages, 3)
-        Run_08_DepthMapFilter(baseDir, binDir)
-        Run_09_Meshing(baseDir, binDir)
-        Run_10_MeshFiltering(baseDir, binDir)
+        # Run_07_DepthMap(baseDir, binDir, numImages, 3)
+        # Run_08_DepthMapFilter(baseDir, binDir)
+        # Run_09_Meshing(baseDir, binDir)
+        # Run_10_MeshFiltering(baseDir, binDir)
 
-        Run_11_Texturing(baseDir, binDir)
+        # Run_11_Texturing(baseDir, binDir)
     elif runStep == "run00":
         Run_00_CameraInit(baseDir, binDir, srcImageDir)
 

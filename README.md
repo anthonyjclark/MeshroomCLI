@@ -1,5 +1,7 @@
 # MeshroomCLI
 
+**This repository is unnecessary. Use the `meshroom_photogrammetry` tool.**
+
 A simple CLI script for running AliceVision/Meshroom software from the command line.
 
 # Tutorial
